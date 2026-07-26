@@ -129,26 +129,14 @@ async function linkEmail(email){
 
   return data;
 }
-async function linkEmail(email){
-  if(!user){
-    throw new Error('사용자 세션이 없습니다.');
-  }
 
-  const cleanEmail = String(email || '').trim();
-
-  if(!cleanEmail){
-    throw new Error('이메일 주소를 입력해 주세요.');
-  }
-
-  const { data, error } = await supa.auth.updateUser({
-    email: cleanEmail
-  });
-
-  if(error){
-    throw error;
-  }
-
-  return data;
-}
-  window.DB={init,getOrCreateDraft,saveDraft,complete,previousWeights,loadLocal,linkEmail};
+window.DB={
+  init,
+  getOrCreateDraft,
+  saveDraft,
+  complete,
+  previousWeights,
+  loadLocal,
+  linkEmail
+};
 })();
