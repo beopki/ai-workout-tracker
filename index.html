@@ -19,6 +19,33 @@ input{width:100%;box-sizing:border-box;padding:10px;border:1px solid #ccc;border
 </style></head><body><main>
 <h1>AI Workout Tracker</h1><div id="status" class="status">온라인 연결 중…</div>
 
+<section class="card" id="emailLinkCard">
+  <h2>이메일 연결</h2>
+
+  <p style="color:#6e6e73;font-size:14px;line-height:1.5">
+    현재 운동 기록을 다른 기기에서도 사용하려면 이메일을 연결하세요.
+  </p>
+
+  <input
+    id="linkEmailInput"
+    type="email"
+    placeholder="이메일 주소"
+    autocomplete="email"
+  >
+
+  <button
+    id="linkEmailButton"
+    class="btn"
+    style="width:100%;margin-top:10px"
+  >
+    이메일 연결
+  </button>
+
+  <div
+    id="emailLinkStatus"
+    style="margin-top:10px;font-size:13px;color:#6e6e73"
+  ></div>
+</section>  
 <section id="home" class="page on">
 <div class="card"><h2 id="mission"></h2><div id="sub"></div></div>
 <div class="card"><div id="tabs" class="tabs"></div></div>
@@ -64,5 +91,42 @@ $('duration').oninput=()=>{draft.duration=$('duration').value;schedule()};$('mem
 $('finish').onclick=async()=>{const missing=Object.values(draft.entries).filter(x=>!x.done).length;if(missing&&!confirm('미완료 운동이 '+missing+'개 있습니다. 종료할까요?'))return;
 const s=await DB.complete(draft);$('results').innerHTML=WORKOUT_CATALOG[s.day].map((name,i)=>{const key=`d${s.day}e${i+1}`,e=s.entries[key],p=previous[key];let ch=!e.done?'미수행':p===undefined?'첫 기록':((Number(e.weight)-p)>=0?'+':'')+(Number(e.weight)-p)+' kg';return`<div style="padding:10px 0;border-bottom:1px solid #eee"><strong>${name}</strong><div>${ch}</div></div>`}).join('');show('result')};
 $('back').onclick=()=>{selected=draft.day===4?1:draft.day+1;renderHome();show('home')};
-(async()=>{try{await DB.init();$('status').textContent='온라인 연결됨';renderHome()}catch(e){$('status').textContent='연결 실패 · '+e.message;alert('Supabase에서 Anonymous Sign-Ins 활성화와 SQL 실행 여부를 확인해 주세요.')}})();
+$('linkEmailButton').onclick = async () => {
+  const email = $('linkEmailInput').value.trim();
+  const status = $('emailLinkStatus');
+  const button = $('linkEmailButton');
+
+  if(!email){
+    alert('이메일 주소를 입력해 주세요.');
+    return;
+  }
+
+  button.disabled = true;
+  status.textContent = '이메일 연결 요청 중…';
+
+  try{
+    await DB.linkEmail(email);
+
+    status.textContent =
+      '확인 이메일을 보냈습니다. 메일에서 확인 링크를 눌러 주세요.';
+
+    alert(
+      '이메일을 확인해 주세요.\n' +
+      '확인 링크를 누르면 현재 운동 기록과 이메일 계정이 연결됩니다.'
+    );
+  }catch(error){
+    console.error(error);
+
+    status.textContent =
+      '이메일 연결 실패 · ' + error.message;
+
+    alert(
+      '이메일 연결에 실패했습니다.\n' +
+      error.message
+    );
+  }finally{
+    button.disabled = false;
+  }
+};
+  (async()=>{try{await DB.init();$('status').textContent='온라인 연결됨';renderHome()}catch(e){$('status').textContent='연결 실패 · '+e.message;alert('Supabase에서 Anonymous Sign-Ins 활성화와 SQL 실행 여부를 확인해 주세요.')}})();
 </script></main></body></html>
