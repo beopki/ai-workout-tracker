@@ -75,7 +75,7 @@ function schedule(){clearTimeout(timer);timer=setTimeout(async()=>{try{await DB.
 function renderWorkout(){
   $('title').textContent='Day '+draft.day;$('duration').value=draft.duration||40;$('memo').value=draft.memo||'';$('list').innerHTML='';
   WORKOUT_CATALOG[draft.day].forEach((name,i)=>{
-    const key=`d${draft.day}e${i+1}`,e=draft.entries[key],p=previous[key],noWeight=['데드버그','팔로프 프레스'].includes(name);
+    const key=getExerciseKey(draft.day, i),e=draft.entries[key],p=previous[key],noWeight=['데드버그','팔로프 프레스'].includes(name);
     const c=document.createElement('div');c.className='exercise'+(e.done?' done':'');
     c.innerHTML=`<h3>${name}</h3><div class="row"><div class="field">지난 중량<br><strong>${p===undefined?'첫 기록':p+' kg'}</strong></div>
     <div class="field">오늘 중량<br>${noWeight?'중량 없음':`<div class="weight"><input class="w" type="number" step="0.5" value="${e.weight}"><span>kg</span></div>`}</div></div>
@@ -89,7 +89,7 @@ function renderWorkout(){
 $('start').onclick=async()=>{draft=await DB.getOrCreateDraft(selected);previous=await DB.previousWeights(selected,draft.date);renderWorkout();show('workout')};
 $('duration').oninput=()=>{draft.duration=$('duration').value;schedule()};$('memo').oninput=()=>{draft.memo=$('memo').value;schedule()};
 $('finish').onclick=async()=>{const missing=Object.values(draft.entries).filter(x=>!x.done).length;if(missing&&!confirm('미완료 운동이 '+missing+'개 있습니다. 종료할까요?'))return;
-const s=await DB.complete(draft);$('results').innerHTML=WORKOUT_CATALOG[s.day].map((name,i)=>{const key=`d${s.day}e${i+1}`,e=s.entries[key],p=previous[key];let ch=!e.done?'미수행':p===undefined?'첫 기록':((Number(e.weight)-p)>=0?'+':'')+(Number(e.weight)-p)+' kg';return`<div style="padding:10px 0;border-bottom:1px solid #eee"><strong>${name}</strong><div>${ch}</div></div>`}).join('');show('result')};
+const s=await DB.complete(draft);$('results').innerHTML=WORKOUT_CATALOG[s.day].map((name,i)=>{const key=getExerciseKey(s.day, i),e=s.entries[key],p=previous[key];let ch=!e.done?'미수행':p===undefined?'첫 기록':((Number(e.weight)-p)>=0?'+':'')+(Number(e.weight)-p)+' kg';return`<div style="padding:10px 0;border-bottom:1px solid #eee"><strong>${name}</strong><div>${ch}</div></div>`}).join('');show('result')};
 $('back').onclick=()=>{selected=draft.day===4?1:draft.day+1;renderHome();show('home')};
 $('linkEmailButton').onclick = async () => {
   const email = $('linkEmailInput').value.trim();
