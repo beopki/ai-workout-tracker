@@ -38,7 +38,7 @@
       if(r.error) throw r.error;
 
       const entries=WORKOUT_CATALOG[day].map((name,i)=>({
-        session_id:r.data.id,user_id:user.id,exercise_key:`d${day}e${i+1}`,
+        session_id:r.data.id,user_id:user.id,exercise_key:getExerciseKey(day, i),
         exercise_name:name,is_completed:false
       }));
       const e=await supa.from('workout_entries').insert(entries).select();
@@ -94,7 +94,7 @@
   }
 
   async function previousWeights(day,date){
-    const keys=WORKOUT_CATALOG[day].map((_,i)=>`d${day}e${i+1}`);
+    const keys=WORKOUT_CATALOG[day].map((_,i)=>getExerciseKey(day, i));
     const r=await supa.from('workout_entries')
       .select('exercise_key,weight_kg,created_at,workout_sessions!inner(workout_date,status)')
       .eq('user_id',user.id).in('exercise_key',keys).eq('is_completed',true)
