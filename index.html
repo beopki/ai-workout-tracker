@@ -68,12 +68,18 @@ function show(id){document.querySelectorAll('.page').forEach(x=>x.classList.remo
 function renderHome(){
   $('tabs').innerHTML='';
   [1,2,3,4].forEach(d=>{const b=document.createElement('button');b.textContent='Day '+d;b.className=d===selected?'on':'';b.onclick=()=>{selected=d;renderHome()};$('tabs').appendChild(b)});
-  $('mission').textContent='Day '+selected;$('sub').textContent=WORKOUT_CATALOG[selected].length+'개 운동 · 약 40분';
+  const info = WORKOUT_DAY_INFO[selected];
+
+$('mission').textContent = info.title;
+
+$('sub').textContent =
+  `${info.subtitle} · ${WORKOUT_CATALOG[selected].length}개 운동 · 약 ${info.minutes}분`;
   $('preview').innerHTML=WORKOUT_CATALOG[selected].map((x,i)=>`<div style="padding:6px 0">${i+1}. ${x}</div>`).join('');
 }
 function schedule(){clearTimeout(timer);timer=setTimeout(async()=>{try{await DB.saveDraft(draft);$('status').textContent='온라인 저장됨 · '+new Date().toLocaleTimeString('ko-KR')}catch(e){$('status').textContent='온라인 저장 실패 · 기기에 임시 저장됨'}},400)}
 function renderWorkout(){
-  $('title').textContent='Day '+draft.day;$('duration').value=draft.duration||40;$('memo').value=draft.memo||'';$('list').innerHTML='';
+  const dayInfo = WORKOUT_DAY_INFO[draft.day];
+$('title').textContent = dayInfo.title;$('duration').value=draft.duration||40;$('memo').value=draft.memo||'';$('list').innerHTML='';
   WORKOUT_CATALOG[draft.day].forEach((name,i)=>{
     const key=getExerciseKey(draft.day, i),e=draft.entries[key],p=previous[key],noWeight=['데드버그','팔로프 프레스'].includes(name);
     const c=document.createElement('div');c.className='exercise'+(e.done?' done':'');
