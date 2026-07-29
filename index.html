@@ -86,7 +86,67 @@ input{width:100%;box-sizing:border-box;padding:10px;border:1px solid #ccc;border
   gap:8px;
   margin-top:10px;
 }
+.chart-card{
+  margin-top:14px;
+}
 
+.chart-title{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:10px;
+}
+
+.chart-title h3{
+  margin:0;
+  font-size:17px;
+}
+
+.chart-latest{
+  color:#6e6e73;
+  font-size:13px;
+}
+
+.chart-wrap{
+  width:100%;
+  overflow-x:auto;
+  padding-bottom:4px;
+}
+
+.body-chart{
+  width:100%;
+  min-width:300px;
+  height:190px;
+  display:block;
+  background:#fafafa;
+  border-radius:12px;
+}
+
+.chart-empty{
+  height:150px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#8e8e93;
+  background:#f7f7f8;
+  border-radius:12px;
+  font-size:14px;
+}
+
+.latest-record{
+  border:2px solid #007aff;
+}
+
+.latest-badge{
+  display:inline-block;
+  margin-left:6px;
+  padding:3px 7px;
+  border-radius:20px;
+  background:#007aff;
+  color:white;
+  font-size:11px;
+  vertical-align:middle;
+}
 @media(max-width:390px){
   .row{grid-template-columns:1fr}
   .metric-grid{grid-template-columns:1fr}
@@ -310,7 +370,46 @@ input{width:100%;box-sizing:border-box;padding:10px;border:1px solid #ccc;border
       기록을 입력하면 목표 진행률이 표시됩니다.
     </div>
   </div>
+<div class="card">
+  <h2>인바디 변화 그래프</h2>
 
+  <p style="color:#6e6e73;font-size:14px;line-height:1.5">
+    오래된 측정일부터 최근 측정일까지의 변화를 보여줍니다.
+  </p>
+
+  <div class="chart-card">
+    <div class="chart-title">
+      <h3>체중</h3>
+      <span id="weightChartLatest" class="chart-latest">-</span>
+    </div>
+
+    <div id="weightChart" class="chart-wrap">
+      <div class="chart-empty">기록이 2개 이상 필요합니다.</div>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-title">
+      <h3>골격근량</h3>
+      <span id="muscleChartLatest" class="chart-latest">-</span>
+    </div>
+
+    <div id="muscleChart" class="chart-wrap">
+      <div class="chart-empty">기록이 2개 이상 필요합니다.</div>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-title">
+      <h3>체지방률</h3>
+      <span id="fatChartLatest" class="chart-latest">-</span>
+    </div>
+
+    <div id="fatChart" class="chart-wrap">
+      <div class="chart-empty">기록이 2개 이상 필요합니다.</div>
+    </div>
+  </div>
+</div>
   <div class="card">
     <h2>측정 기록</h2>
 
@@ -407,7 +506,160 @@ function fillBodyForm(record){
     behavior:'smooth'
   });
 }
+function renderLineChart(containerId,latestId,records,field,unit){
+  const container=$(containerId);
+  const latestLabel=$(latestId);
 
+  const points=records
+    .filter(record=>record[field]!==null&&record[field]!==undefined)
+    .slice()
+    .reverse();
+
+  if(!points.length){
+    container.innerHTML=
+      '<div class="chart-empty">저장된 기록이 없습니다.</div>';
+    latestLabel.textContent='-';
+    return;
+  }
+
+  const latestValue=Number(points[points.length-1][field]);
+  latestLabel.textContent=latestValue.toFixed(1)+unit;
+
+  if(points.length<2){
+    container.innerHTML=
+      '<div class="chart-empty">기록이 2개 이상 필요합니다.</div>';
+    return;
+  }
+
+  const values=points.map(record=>Number(record[field]));
+  const minValue=Math.min(...values);
+  const maxValue=Math.max(...values);
+
+  const width=Math.max(320,points.length*75);
+  const height=190;
+  const paddingLeft=42;
+  const paddingRight=18;
+  const paddingTop=20;
+  const paddingBottom=38;
+
+  const chartWidth=width-paddingLeft-paddingRight;
+  const chartHeight=height-paddingTop-paddingBottom;
+
+  const range=maxValue-minValue||1;
+  const lower=minValue-range*0.15;
+  const upper=maxValue+range*0.15;
+
+  const x=index=>
+    paddingLeft+
+    (points.length===1
+      ? chartWidth/2
+      : index*(chartWidth/(points.length-1)));
+
+  const y=value=>
+    paddingTop+
+    ((upper-value)/(upper-lower))*chartHeight;
+
+  const polyline=points
+    .map((record,index)=>`${x(index)},${y(Number(record[field]))}`)
+    .join(' ');
+
+  const circles=points.map((record,index)=>{
+    const value=Number(record[field]);
+    const date=record.measured_date.slice(5);
+
+    return `
+      <circle
+        cx="${x(index)}"
+        cy="${y(value)}"
+        r="4"
+        fill="#007aff"
+      ></circle>
+
+      <text
+        x="${x(index)}"
+        y="${y(value)-10}"
+        text-anchor="middle"
+        font-size="11"
+        fill="#1c1c1e"
+      >
+        ${value.toFixed(1)}
+      </text>
+
+      <text
+        x="${x(index)}"
+        y="${height-13}"
+        text-anchor="middle"
+        font-size="10"
+        fill="#6e6e73"
+      >
+        ${date}
+      </text>
+    `;
+  }).join('');
+
+  container.innerHTML=`
+    <svg
+      class="body-chart"
+      viewBox="0 0 ${width} ${height}"
+      style="min-width:${width}px"
+      role="img"
+      aria-label="${containerId} 변화 그래프"
+    >
+      <line
+        x1="${paddingLeft}"
+        y1="${paddingTop}"
+        x2="${paddingLeft}"
+        y2="${height-paddingBottom}"
+        stroke="#d1d1d6"
+      ></line>
+
+      <line
+        x1="${paddingLeft}"
+        y1="${height-paddingBottom}"
+        x2="${width-paddingRight}"
+        y2="${height-paddingBottom}"
+        stroke="#d1d1d6"
+      ></line>
+
+      <polyline
+        points="${polyline}"
+        fill="none"
+        stroke="#007aff"
+        stroke-width="3"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      ></polyline>
+
+      ${circles}
+    </svg>
+  `;
+}
+
+function renderBodyCharts(){
+  renderLineChart(
+    'weightChart',
+    'weightChartLatest',
+    bodyRecords,
+    'weight_kg',
+    'kg'
+  );
+
+  renderLineChart(
+    'muscleChart',
+    'muscleChartLatest',
+    bodyRecords,
+    'skeletal_muscle_kg',
+    'kg'
+  );
+
+  renderLineChart(
+    'fatChart',
+    'fatChartLatest',
+    bodyRecords,
+    'body_fat_percent',
+    '%'
+  );
+}
 function renderBodyRecords(){
   const list=$('bodyRecordList');
 
@@ -433,7 +685,7 @@ function renderBodyRecords(){
     $('bodyGoalBar').style.width='0%';
     $('bodyGoalText').textContent=
       '기록을 입력하면 목표 진행률이 표시됩니다.';
-
+renderBodyCharts();
     return;
   }
 
@@ -525,10 +777,13 @@ function renderBodyRecords(){
     `시작 대비 ${gained>=0?'+':''}${gained.toFixed(1)}kg · `+
     `목표까지 ${remaining.toFixed(1)}kg · `+
     `${Math.round(goalPercent)}%`;
-
+renderBodyCharts();
   list.innerHTML=bodyRecords.map(record=>`
-    <div class="body-record">
-      <strong>${escapeHtml(record.measured_date)}</strong>
+   <div class="body-record ${record===latest?'latest-record':''}">
+   <strong>
+  ${escapeHtml(record.measured_date)}
+  ${record===latest?'<span class="latest-badge">최신</span>':''}
+</strong>
 
       <div style="margin-top:8px;line-height:1.7">
         체중 ${displayNumber(record.weight_kg)}kg ·
