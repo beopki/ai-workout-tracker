@@ -129,7 +129,90 @@ async function linkEmail(email){
 
   return data;
 }
+async function saveBodyRecord(record){
+  if(!user){
+    throw new Error('사용자 세션이 없습니다.');
+  }
 
+  const payload={
+    user_id:user.id,
+    measured_date:record.measured_date,
+    weight_kg:Number(record.weight_kg),
+    skeletal_muscle_kg:
+      record.skeletal_muscle_kg === '' ||
+      record.skeletal_muscle_kg == null
+        ? null
+        : Number(record.skeletal_muscle_kg),
+    body_fat_percent:
+      record.body_fat_percent === '' ||
+      record.body_fat_percent == null
+        ? null
+        : Number(record.body_fat_percent),
+    body_fat_mass_kg:
+      record.body_fat_mass_kg === '' ||
+      record.body_fat_mass_kg == null
+        ? null
+        : Number(record.body_fat_mass_kg),
+    bmi:
+      record.bmi === '' || record.bmi == null
+        ? null
+        : Number(record.bmi),
+    waist_hip_ratio:
+      record.waist_hip_ratio === '' ||
+      record.waist_hip_ratio == null
+        ? null
+        : Number(record.waist_hip_ratio),
+    visceral_fat_level:
+      record.visceral_fat_level === '' ||
+      record.visceral_fat_level == null
+        ? null
+        : Number(record.visceral_fat_level),
+    memo:String(record.memo || '').trim() || null,
+    updated_at:new Date().toISOString()
+  };
+
+  const r=await supa
+    .from('body_composition_records')
+    .upsert(payload,{
+      onConflict:'user_id,measured_date'
+    })
+    .select()
+    .single();
+
+  if(r.error) throw r.error;
+
+  return r.data;
+}
+
+async function loadBodyRecords(){
+  if(!user){
+    throw new Error('사용자 세션이 없습니다.');
+  }
+
+  const r=await supa
+    .from('body_composition_records')
+    .select('*')
+    .eq('user_id',user.id)
+    .order('measured_date',{ascending:false});
+
+  if(r.error) throw r.error;
+
+  return r.data || [];
+}
+
+async function deleteBodyRecord(id){
+  if(!user){
+    throw new Error('사용자 세션이 없습니다.');
+  }
+
+  const r=await supa
+    .from('body_composition_records')
+    .delete()
+    .eq('id',id)
+    .eq('user_id',user.id);
+
+  if(r.error) throw r.error;
+}
 window.DB={
   init,
   getOrCreateDraft,
