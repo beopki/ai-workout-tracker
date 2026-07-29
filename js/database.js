@@ -225,3 +225,4 @@ window.DB={
   loadBodyRecords,
   deleteBodyRecord
 };
+  })();
