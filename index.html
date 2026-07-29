@@ -147,6 +147,20 @@ input{width:100%;box-sizing:border-box;padding:10px;border:1px solid #ccc;border
   font-size:11px;
   vertical-align:middle;
 }
+  .change-positive{
+  color:#248a3d;
+  font-weight:700;
+}
+
+.change-negative{
+  color:#d70015;
+  font-weight:700;
+}
+
+.change-neutral{
+  color:#6e6e73;
+  font-weight:700;
+}
 @media(max-width:390px){
   .row{grid-template-columns:1fr}
   .metric-grid{grid-template-columns:1fr}
@@ -156,7 +170,16 @@ input{width:100%;box-sizing:border-box;padding:10px;border:1px solid #ccc;border
 <h1>AI Workout Tracker</h1><div id="status" class="status">온라인 연결 중…</div>
 
 <section class="card" id="emailLinkCard">
-  <h2>이메일 연결</h2>
+  <button
+    id="emailCardToggle"
+    type="button"
+    style="width:100%;border:0;background:transparent;padding:0;display:flex;justify-content:space-between;align-items:center;text-align:left"
+  >
+    <h2 style="margin:0">이메일 연결</h2>
+    <span id="emailToggleIcon">열기 ＋</span>
+  </button>
+
+  <div id="emailCardContent" style="display:none;margin-top:14px">
 
   <p style="color:#6e6e73;font-size:14px;line-height:1.5">
     현재 운동 기록을 다른 기기에서도 사용하려면 이메일을 연결하세요.
@@ -178,10 +201,13 @@ input{width:100%;box-sizing:border-box;padding:10px;border:1px solid #ccc;border
   </button>
 
   <div
+    <div
     id="emailLinkStatus"
     style="margin-top:10px;font-size:13px;color:#6e6e73"
   ></div>
-</section>  
+
+  </div>
+</section>
   <section class="card">
   <div class="topnav">
     <button id="workoutNav" class="on">운동 기록</button>
@@ -489,18 +515,31 @@ function displayNumber(value,digits=1){
   return Number(value).toFixed(digits);
 }
 
-function changeText(current,base,unit){
+function changeText(current,base,unit,reverseGood=false){
   if(
     current===null||current===undefined||
     base===null||base===undefined
   ){
-    return '-';
+    return '<span class="change-neutral">-</span>';
   }
 
   const difference=Number(current)-Number(base);
+
+  if(Math.abs(difference)<0.05){
+    return '<span class="change-neutral">변화 없음</span>';
+  }
+
+  const isGood=reverseGood
+    ? difference<0
+    : difference>0;
+
+  const className=isGood
+    ? 'change-positive'
+    : 'change-negative';
+
   const sign=difference>0?'+':'';
 
-  return `${sign}${difference.toFixed(1)}${unit}`;
+  return `<span class="${className}">${sign}${difference.toFixed(1)}${unit}</span>`;
 }
 
 function escapeHtml(value){
@@ -770,7 +809,8 @@ renderBodyCharts();
       체지방률 ${changeText(
         latest.body_fat_percent,
         previousRecord.body_fat_percent,
-        '%'
+        '%',
+        true
       )}
       <br><br>
 
@@ -784,7 +824,8 @@ renderBodyCharts();
       체지방률 ${changeText(
         latest.body_fat_percent,
         first.body_fat_percent,
-        '%'
+        '%',
+        true
       )}
     `;
   }else{
@@ -1008,6 +1049,14 @@ $('duration').oninput=()=>{draft.duration=$('duration').value;schedule()};$('mem
 $('finish').onclick=async()=>{const missing=Object.values(draft.entries).filter(x=>!x.done).length;if(missing&&!confirm('미완료 운동이 '+missing+'개 있습니다. 종료할까요?'))return;
 const s=await DB.complete(draft);$('results').innerHTML=WORKOUT_CATALOG[s.day].map((name,i)=>{const key=getExerciseKey(s.day, i),e=s.entries[key],p=previous[key];let ch=!e.done?'미수행':p===undefined?'첫 기록':((Number(e.weight)-p)>=0?'+':'')+(Number(e.weight)-p)+' kg';return`<div style="padding:10px 0;border-bottom:1px solid #eee"><strong>${name}</strong><div>${ch}</div></div>`}).join('');show('result')};
 $('back').onclick=()=>{selected=draft.day===4?1:draft.day+1;renderHome();show('home')};
+  $('emailCardToggle').onclick=()=>{
+  const content=$('emailCardContent');
+  const icon=$('emailToggleIcon');
+  const isOpen=content.style.display!=='none';
+
+  content.style.display=isOpen?'none':'block';
+  icon.textContent=isOpen?'열기 ＋':'닫기 −';
+};
 $('linkEmailButton').onclick = async () => {
   const email = $('linkEmailInput').value.trim();
   const status = $('emailLinkStatus');
