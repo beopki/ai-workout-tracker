@@ -15,7 +15,83 @@ input{width:100%;box-sizing:border-box;padding:10px;border:1px solid #ccc;border
 .actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.secondary{background:#e5e5ea;color:#1c1c1e}
 .progress{height:14px;background:#ddd;border-radius:9px;overflow:hidden}.bar{height:100%;background:#34c759;width:0}
 .status{font-size:12px;color:#6e6e73;margin-bottom:10px}.page{display:none}.page.on{display:block}
-@media(max-width:390px){.row{grid-template-columns:1fr}}
+
+.topnav{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+.topnav button{
+  border:0;
+  border-radius:11px;
+  padding:12px;
+  font-weight:700;
+  background:#e5e5ea;
+  color:#1c1c1e;
+}
+
+.topnav button.on{
+  background:#007aff;
+  color:#fff;
+}
+
+.metric-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.metric{
+  margin-top:10px;
+}
+
+.metric label{
+  display:block;
+  margin-bottom:5px;
+  font-size:14px;
+  font-weight:700;
+}
+
+.body-summary{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+
+.summary-item{
+  background:#f2f2f7;
+  border-radius:12px;
+  padding:10px;
+  text-align:center;
+}
+
+.summary-item small{
+  display:block;
+  color:#6e6e73;
+  margin-bottom:4px;
+}
+
+.body-record{
+  background:#fff;
+  border-radius:14px;
+  padding:13px;
+  margin:10px 0;
+  border:1px solid #e5e5ea;
+}
+
+.record-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:10px;
+}
+
+@media(max-width:390px){
+  .row{grid-template-columns:1fr}
+  .metric-grid{grid-template-columns:1fr}
+  .body-summary{grid-template-columns:1fr}
+}
 </style></head><body><main>
 <h1>AI Workout Tracker</h1><div id="status" class="status">온라인 연결 중…</div>
 
@@ -46,6 +122,12 @@ input{width:100%;box-sizing:border-box;padding:10px;border:1px solid #ccc;border
     style="margin-top:10px;font-size:13px;color:#6e6e73"
   ></div>
 </section>  
+  <section class="card">
+  <div class="topnav">
+    <button id="workoutNav" class="on">운동 기록</button>
+    <button id="bodyNav">인바디 기록</button>
+  </div>
+</section>
 <section id="home" class="page on">
 <div class="card"><h2 id="mission"></h2><div id="sub"></div></div>
 <div class="card"><div id="tabs" class="tabs"></div></div>
@@ -60,9 +142,186 @@ input{width:100%;box-sizing:border-box;padding:10px;border:1px solid #ccc;border
 </section>
 
 <section id="result" class="page"><div class="card"><h2>오늘의 성장</h2><div id="results"></div></div><button id="back" class="btn" style="width:100%">완료</button></section>
+<section id="bodyPage" class="page">
 
+  <div class="card">
+    <h2>인바디 기록</h2>
+
+    <p style="color:#6e6e73;font-size:14px;line-height:1.5">
+      측정 결과를 입력하면 직전 기록과 최초 기록 대비 변화를 확인할 수 있습니다.
+    </p>
+
+    <div class="metric">
+      <label for="bodyDate">측정일</label>
+      <input id="bodyDate" type="date">
+    </div>
+
+    <div class="metric-grid">
+
+      <div class="metric">
+        <label for="bodyWeight">체중 (kg) *</label>
+        <input
+          id="bodyWeight"
+          type="number"
+          step="0.1"
+          inputmode="decimal"
+          placeholder="예: 59.6"
+        >
+      </div>
+
+      <div class="metric">
+        <label for="bodyMuscle">골격근량 (kg)</label>
+        <input
+          id="bodyMuscle"
+          type="number"
+          step="0.1"
+          inputmode="decimal"
+          placeholder="예: 27.6"
+        >
+      </div>
+
+      <div class="metric">
+        <label for="bodyFatPercent">체지방률 (%)</label>
+        <input
+          id="bodyFatPercent"
+          type="number"
+          step="0.1"
+          inputmode="decimal"
+          placeholder="예: 16.6"
+        >
+      </div>
+
+      <div class="metric">
+        <label for="bodyFatMass">체지방량 (kg)</label>
+        <input
+          id="bodyFatMass"
+          type="number"
+          step="0.1"
+          inputmode="decimal"
+          placeholder="선택 입력"
+        >
+      </div>
+
+      <div class="metric">
+        <label for="bodyBmi">BMI</label>
+        <input
+          id="bodyBmi"
+          type="number"
+          step="0.1"
+          inputmode="decimal"
+          placeholder="선택 입력"
+        >
+      </div>
+
+      <div class="metric">
+        <label for="bodyVisceralFat">내장지방 레벨</label>
+        <input
+          id="bodyVisceralFat"
+          type="number"
+          step="1"
+          inputmode="numeric"
+          placeholder="선택 입력"
+        >
+      </div>
+
+      <div class="metric">
+        <label for="bodyWaistHip">복부지방률</label>
+        <input
+          id="bodyWaistHip"
+          type="number"
+          step="0.01"
+          inputmode="decimal"
+          placeholder="선택 입력"
+        >
+      </div>
+
+    </div>
+
+    <div class="metric">
+      <label for="bodyMemo">메모</label>
+      <input
+        id="bodyMemo"
+        type="text"
+        placeholder="측정 장소, 운동 상태 등"
+      >
+    </div>
+
+    <button
+      id="saveBody"
+      class="btn"
+      style="width:100%;margin-top:14px"
+    >
+      인바디 기록 저장
+    </button>
+
+    <button
+      id="cancelBodyEdit"
+      class="secondary"
+      style="display:none;width:100%;border:0;border-radius:11px;padding:12px;font-weight:700;margin-top:8px"
+    >
+      수정 취소
+    </button>
+
+    <div
+      id="bodySaveStatus"
+      style="margin-top:10px;font-size:13px;color:#6e6e73"
+    ></div>
+  </div>
+
+  <div class="card">
+    <h2>현재 변화</h2>
+
+    <div id="bodySummary" class="body-summary">
+      <div class="summary-item">
+        <small>현재 체중</small>
+        <strong>-</strong>
+      </div>
+
+      <div class="summary-item">
+        <small>골격근량</small>
+        <strong>-</strong>
+      </div>
+
+      <div class="summary-item">
+        <small>체지방률</small>
+        <strong>-</strong>
+      </div>
+    </div>
+
+    <div
+      id="bodyChanges"
+      style="margin-top:12px;line-height:1.7"
+    >
+      아직 저장된 기록이 없습니다.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>목표 체중 68kg</h2>
+
+    <div class="progress">
+      <div id="bodyGoalBar" class="bar"></div>
+    </div>
+
+    <div
+      id="bodyGoalText"
+      style="margin-top:8px;color:#6e6e73"
+    >
+      기록을 입력하면 목표 진행률이 표시됩니다.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>측정 기록</h2>
+
+    <div id="bodyRecordList">
+      저장된 기록이 없습니다.
+    </div>
+  </div>
+
+</section>
 <script>
-let selected=1,draft,previous={},timer;
+let selected=1,draft,previous={},timer,bodyRecords=[];
 const $=id=>document.getElementById(id);
 function show(id){document.querySelectorAll('.page').forEach(x=>x.classList.remove('on'));$(id).classList.add('on')}
 function renderHome(){
@@ -75,6 +334,295 @@ $('mission').textContent = info.title;
 $('sub').textContent =
   `${info.subtitle} · ${WORKOUT_CATALOG[selected].length}개 운동 · 약 ${info.minutes}분`;
   $('preview').innerHTML=WORKOUT_CATALOG[selected].map((x,i)=>`<div style="padding:6px 0">${i+1}. ${x}</div>`).join('');
+}
+  function localToday(){
+  const now=new Date();
+  const local=new Date(now.getTime()-now.getTimezoneOffset()*60000);
+  return local.toISOString().slice(0,10);
+}
+
+function bodyValue(id){
+  return $(id).value.trim();
+}
+
+function displayNumber(value,digits=1){
+  if(value===null||value===undefined||value==='') return '-';
+  return Number(value).toFixed(digits);
+}
+
+function changeText(current,base,unit){
+  if(
+    current===null||current===undefined||
+    base===null||base===undefined
+  ){
+    return '-';
+  }
+
+  const difference=Number(current)-Number(base);
+  const sign=difference>0?'+':'';
+
+  return `${sign}${difference.toFixed(1)}${unit}`;
+}
+
+function escapeHtml(value){
+  return String(value??'')
+    .replaceAll('&','&amp;')
+    .replaceAll('<','&lt;')
+    .replaceAll('>','&gt;')
+    .replaceAll('"','&quot;')
+    .replaceAll("'","&#039;");
+}
+
+function resetBodyForm(){
+  $('bodyDate').value=localToday();
+  $('bodyWeight').value='';
+  $('bodyMuscle').value='';
+  $('bodyFatPercent').value='';
+  $('bodyFatMass').value='';
+  $('bodyBmi').value='';
+  $('bodyVisceralFat').value='';
+  $('bodyWaistHip').value='';
+  $('bodyMemo').value='';
+
+  $('saveBody').textContent='인바디 기록 저장';
+  $('cancelBodyEdit').style.display='none';
+}
+
+function fillBodyForm(record){
+  $('bodyDate').value=record.measured_date;
+  $('bodyWeight').value=record.weight_kg??'';
+  $('bodyMuscle').value=record.skeletal_muscle_kg??'';
+  $('bodyFatPercent').value=record.body_fat_percent??'';
+  $('bodyFatMass').value=record.body_fat_mass_kg??'';
+  $('bodyBmi').value=record.bmi??'';
+  $('bodyVisceralFat').value=record.visceral_fat_level??'';
+  $('bodyWaistHip').value=record.waist_hip_ratio??'';
+  $('bodyMemo').value=record.memo??'';
+
+  $('saveBody').textContent='인바디 기록 수정';
+  $('cancelBodyEdit').style.display='block';
+
+  window.scrollTo({
+    top:$('bodyPage').offsetTop,
+    behavior:'smooth'
+  });
+}
+
+function renderBodyRecords(){
+  const list=$('bodyRecordList');
+
+  if(!bodyRecords.length){
+    list.textContent='저장된 기록이 없습니다.';
+
+    $('bodySummary').innerHTML=`
+      <div class="summary-item">
+        <small>현재 체중</small>
+        <strong>-</strong>
+      </div>
+      <div class="summary-item">
+        <small>골격근량</small>
+        <strong>-</strong>
+      </div>
+      <div class="summary-item">
+        <small>체지방률</small>
+        <strong>-</strong>
+      </div>
+    `;
+
+    $('bodyChanges').textContent='아직 저장된 기록이 없습니다.';
+    $('bodyGoalBar').style.width='0%';
+    $('bodyGoalText').textContent=
+      '기록을 입력하면 목표 진행률이 표시됩니다.';
+
+    return;
+  }
+
+  const latest=bodyRecords[0];
+  const previousRecord=bodyRecords[1];
+  const first=bodyRecords[bodyRecords.length-1];
+
+  $('bodySummary').innerHTML=`
+    <div class="summary-item">
+      <small>현재 체중</small>
+      <strong>${displayNumber(latest.weight_kg)}kg</strong>
+    </div>
+
+    <div class="summary-item">
+      <small>골격근량</small>
+      <strong>${
+        latest.skeletal_muscle_kg==null
+          ? '-'
+          : displayNumber(latest.skeletal_muscle_kg)+'kg'
+      }</strong>
+    </div>
+
+    <div class="summary-item">
+      <small>체지방률</small>
+      <strong>${
+        latest.body_fat_percent==null
+          ? '-'
+          : displayNumber(latest.body_fat_percent)+'%'
+      }</strong>
+    </div>
+  `;
+
+  if(previousRecord){
+    $('bodyChanges').innerHTML=`
+      <strong>직전 측정 대비</strong><br>
+      체중 ${changeText(latest.weight_kg,previousRecord.weight_kg,'kg')} ·
+      골격근량 ${changeText(
+        latest.skeletal_muscle_kg,
+        previousRecord.skeletal_muscle_kg,
+        'kg'
+      )} ·
+      체지방률 ${changeText(
+        latest.body_fat_percent,
+        previousRecord.body_fat_percent,
+        '%'
+      )}
+      <br><br>
+
+      <strong>최초 측정 대비</strong><br>
+      체중 ${changeText(latest.weight_kg,first.weight_kg,'kg')} ·
+      골격근량 ${changeText(
+        latest.skeletal_muscle_kg,
+        first.skeletal_muscle_kg,
+        'kg'
+      )} ·
+      체지방률 ${changeText(
+        latest.body_fat_percent,
+        first.body_fat_percent,
+        '%'
+      )}
+    `;
+  }else{
+    $('bodyChanges').textContent=
+      '첫 기록입니다. 다음 측정부터 변화량이 표시됩니다.';
+  }
+
+  const targetWeight=68;
+  const startWeight=Number(first.weight_kg);
+  const currentWeight=Number(latest.weight_kg);
+
+  let goalPercent;
+
+  if(startWeight>=targetWeight){
+    goalPercent=currentWeight>=targetWeight?100:0;
+  }else{
+    goalPercent=
+      ((currentWeight-startWeight)/(targetWeight-startWeight))*100;
+  }
+
+  goalPercent=Math.max(0,Math.min(100,goalPercent));
+
+  $('bodyGoalBar').style.width=goalPercent+'%';
+
+  const gained=currentWeight-startWeight;
+  const remaining=Math.max(0,targetWeight-currentWeight);
+
+  $('bodyGoalText').textContent=
+    `현재 ${currentWeight.toFixed(1)}kg · `+
+    `시작 대비 ${gained>=0?'+':''}${gained.toFixed(1)}kg · `+
+    `목표까지 ${remaining.toFixed(1)}kg · `+
+    `${Math.round(goalPercent)}%`;
+
+  list.innerHTML=bodyRecords.map(record=>`
+    <div class="body-record">
+      <strong>${escapeHtml(record.measured_date)}</strong>
+
+      <div style="margin-top:8px;line-height:1.7">
+        체중 ${displayNumber(record.weight_kg)}kg ·
+        골격근량 ${
+          record.skeletal_muscle_kg==null
+            ? '-'
+            : displayNumber(record.skeletal_muscle_kg)+'kg'
+        } ·
+        체지방률 ${
+          record.body_fat_percent==null
+            ? '-'
+            : displayNumber(record.body_fat_percent)+'%'
+        }
+      </div>
+
+      ${
+        record.memo
+          ? `<div style="margin-top:6px;color:#6e6e73">
+              ${escapeHtml(record.memo)}
+            </div>`
+          : ''
+      }
+
+      <div class="record-actions">
+        <button
+          class="secondary body-edit"
+          data-id="${record.id}"
+          style="border:0;border-radius:11px;padding:10px;font-weight:700"
+        >
+          수정
+        </button>
+
+        <button
+          class="secondary body-delete"
+          data-id="${record.id}"
+          style="border:0;border-radius:11px;padding:10px;font-weight:700"
+        >
+          삭제
+        </button>
+      </div>
+    </div>
+  `).join('');
+
+  list.querySelectorAll('.body-edit').forEach(button=>{
+    button.onclick=()=>{
+      const record=bodyRecords.find(x=>x.id===button.dataset.id);
+      if(record) fillBodyForm(record);
+    };
+  });
+
+  list.querySelectorAll('.body-delete').forEach(button=>{
+    button.onclick=async()=>{
+      const record=bodyRecords.find(x=>x.id===button.dataset.id);
+
+      if(!record) return;
+
+      if(!confirm(`${record.measured_date} 기록을 삭제할까요?`)){
+        return;
+      }
+
+      try{
+        await DB.deleteBodyRecord(record.id);
+        bodyRecords=await DB.loadBodyRecords();
+        renderBodyRecords();
+        resetBodyForm();
+        $('bodySaveStatus').textContent='기록을 삭제했습니다.';
+      }catch(error){
+        console.error(error);
+        alert('기록 삭제에 실패했습니다.\n'+error.message);
+      }
+    };
+  });
+}
+
+async function openBodyPage(){
+  $('workoutNav').classList.remove('on');
+  $('bodyNav').classList.add('on');
+
+  show('bodyPage');
+
+  if(!$('bodyDate').value){
+    $('bodyDate').value=localToday();
+  }
+
+  $('bodyRecordList').textContent='기록을 불러오는 중…';
+
+  try{
+    bodyRecords=await DB.loadBodyRecords();
+    renderBodyRecords();
+  }catch(error){
+    console.error(error);
+    $('bodyRecordList').textContent=
+      '기록을 불러오지 못했습니다. '+error.message;
+  }
 }
 function schedule(){clearTimeout(timer);timer=setTimeout(async()=>{try{await DB.saveDraft(draft);$('status').textContent='온라인 저장됨 · '+new Date().toLocaleTimeString('ko-KR')}catch(e){$('status').textContent='온라인 저장 실패 · 기기에 임시 저장됨'}},400)}
 function renderWorkout(){
@@ -92,6 +640,74 @@ $('title').textContent = dayInfo.title;$('duration').value=draft.duration||40;$(
   });
   const vals=Object.values(draft.entries),n=vals.filter(x=>x.done).length,p=Math.round(n*100/vals.length);$('bar').style.width=p+'%';$('count').textContent=n+' / '+vals.length+' · '+p+'%';
 }
+  $('workoutNav').onclick=()=>{
+  $('workoutNav').classList.add('on');
+  $('bodyNav').classList.remove('on');
+
+  renderHome();
+  show('home');
+};
+
+$('bodyNav').onclick=()=>{
+  openBodyPage();
+};
+
+$('cancelBodyEdit').onclick=()=>{
+  resetBodyForm();
+  $('bodySaveStatus').textContent='수정을 취소했습니다.';
+};
+
+$('saveBody').onclick=async()=>{
+  const date=bodyValue('bodyDate');
+  const weight=bodyValue('bodyWeight');
+  const button=$('saveBody');
+  const saveStatus=$('bodySaveStatus');
+
+  if(!date){
+    alert('측정일을 입력해 주세요.');
+    return;
+  }
+
+  if(!weight||Number(weight)<=0){
+    alert('체중을 정확하게 입력해 주세요.');
+    return;
+  }
+
+  button.disabled=true;
+  saveStatus.textContent='인바디 기록 저장 중…';
+
+  try{
+    await DB.saveBodyRecord({
+      measured_date:date,
+      weight_kg:weight,
+      skeletal_muscle_kg:bodyValue('bodyMuscle'),
+      body_fat_percent:bodyValue('bodyFatPercent'),
+      body_fat_mass_kg:bodyValue('bodyFatMass'),
+      bmi:bodyValue('bodyBmi'),
+      visceral_fat_level:bodyValue('bodyVisceralFat'),
+      waist_hip_ratio:bodyValue('bodyWaistHip'),
+      memo:bodyValue('bodyMemo')
+    });
+
+    bodyRecords=await DB.loadBodyRecords();
+    renderBodyRecords();
+    resetBodyForm();
+
+    saveStatus.textContent='인바디 기록이 온라인에 저장되었습니다.';
+  }catch(error){
+    console.error(error);
+
+    saveStatus.textContent=
+      '저장 실패 · '+error.message;
+
+    alert(
+      '인바디 기록 저장에 실패했습니다.\n'+
+      error.message
+    );
+  }finally{
+    button.disabled=false;
+  }
+};
 $('start').onclick=async()=>{draft=await DB.getOrCreateDraft(selected);previous=await DB.previousWeights(selected,draft.date);renderWorkout();show('workout')};
 $('duration').oninput=()=>{draft.duration=$('duration').value;schedule()};$('memo').oninput=()=>{draft.memo=$('memo').value;schedule()};
 $('finish').onclick=async()=>{const missing=Object.values(draft.entries).filter(x=>!x.done).length;if(missing&&!confirm('미완료 운동이 '+missing+'개 있습니다. 종료할까요?'))return;
