@@ -220,6 +220,8 @@ window.DB={
   complete,
   previousWeights,
   loadLocal,
-  linkEmail
+  linkEmail,
+  saveBodyRecord,
+  loadBodyRecords,
+  deleteBodyRecord
 };
-})();
