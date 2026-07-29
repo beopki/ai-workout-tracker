@@ -119,9 +119,15 @@ async function linkEmail(email){
     throw new Error('이메일 주소를 입력해 주세요.');
   }
 
-  const { data, error } = await supa.auth.updateUser({
+  const { data, error } = await supa.auth.updateUser(
+  {
     email: cleanEmail
-  });
+  },
+  {
+    emailRedirectTo:
+      'https://beopki.github.io/ai-workout-tracker/'
+  }
+);
 
   if(error){
     throw error;
