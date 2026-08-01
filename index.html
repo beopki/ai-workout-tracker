@@ -175,11 +175,15 @@ input{width:100%;box-sizing:border-box;padding:10px;border:1px solid #ccc;border
     type="button"
     style="width:100%;border:0;background:transparent;padding:0;display:flex;justify-content:space-between;align-items:center;text-align:left"
   >
-    <h2 style="margin:0">이메일 연결</h2>
+    <h2 id="emailCardTitle" style="margin:0">이메일 연결</h2>
     <span id="emailToggleIcon">열기 ＋</span>
   </button>
 
   <div id="emailCardContent" style="display:none;margin-top:14px">
+    <div
+  id="emailConnectedInfo"
+  style="display:none;margin-top:8px;color:#248a3d;font-weight:700"
+></div>
 
   <p style="color:#6e6e73;font-size:14px;line-height:1.5">
     현재 운동 기록을 다른 기기에서도 사용하려면 이메일을 연결하세요.
@@ -490,6 +494,34 @@ let selected=1,draft,previous={},timer,bodyRecords=[];
 const $=id=>document.getElementById(id);
 function show(id){document.querySelectorAll('.page').forEach(x=>x.classList.remove('on'));$(id).classList.add('on')}
 function renderHome(){
+  function updateEmailCard(user){
+  const email=user?.email;
+  const content=$('emailCardContent');
+  const info=$('emailConnectedInfo');
+  const icon=$('emailToggleIcon');
+
+  if(email){
+    $('emailCardTitle').textContent='이메일 연결 완료';
+    info.textContent=`✓ ${email}`;
+    info.style.display='block';
+
+    content.style.display='none';
+    icon.style.display='none';
+
+    $('emailCardToggle').style.cursor='default';
+    $('emailCardToggle').disabled=true;
+  }else{
+    $('emailCardTitle').textContent='이메일 연결';
+    info.textContent='';
+    info.style.display='none';
+
+    icon.style.display='inline';
+    icon.textContent='열기 ＋';
+
+    $('emailCardToggle').style.cursor='pointer';
+    $('emailCardToggle').disabled=false;
+  }
+}
   $('tabs').innerHTML='';
   [1,2,3,4].forEach(d=>{const b=document.createElement('button');b.textContent='Day '+d;b.className=d===selected?'on':'';b.onclick=()=>{selected=d;renderHome()};$('tabs').appendChild(b)});
   const info = WORKOUT_DAY_INFO[selected];
@@ -1094,5 +1126,20 @@ $('linkEmailButton').onclick = async () => {
     button.disabled = false;
   }
 };
-  (async()=>{try{await DB.init();$('status').textContent='온라인 연결됨';renderHome()}catch(e){$('status').textContent='연결 실패 · '+e.message;alert('Supabase에서 Anonymous Sign-Ins 활성화와 SQL 실행 여부를 확인해 주세요.')}})();
+(async()=>{
+  try{
+    const user=await DB.init();
+
+    $('status').textContent='온라인 연결됨';
+    updateEmailCard(user);
+    renderHome();
+  }catch(e){
+    $('status').textContent='연결 실패 · '+e.message;
+
+    alert(
+      'Supabase에서 Anonymous Sign-Ins 활성화와 '+
+      'SQL 실행 여부를 확인해 주세요.'
+    );
+  }
+})();  
 </script></main></body></html>
