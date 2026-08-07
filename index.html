@@ -1009,13 +1009,20 @@ $('title').textContent = dayInfo.title;$('duration').value=draft.duration||40;$(
     const c=document.createElement('div');c.className='exercise'+(e.done?' done':'');
     c.innerHTML=`<h3>${name}</h3><div class="row"><div class="field">지난 중량<br><strong>${p===undefined?'첫 기록':p+' kg'}</strong></div>
     <div class="field">오늘 중량<br>${noWeight?'중량 없음':`<div class="weight"><input class="w" type="number" step="0.5" value="${e.weight}"><span>kg</span></div>`}</div></div>
-    <div class="actions"><button class="secondary">운동 설명</button><button class="btn donebtn">${e.done?'완료됨 ✓':'완료'}</button></div>`;
+    <div class="actions"><button class="secondary guidebtn">운동 설명</button><button class="btn donebtn">${e.done?'완료됨 ✓':'완료'}</button></div>`;
     const input=c.querySelector('.w');if(input)input.oninput=()=>{e.weight=input.value;schedule()};
     c.querySelector('.donebtn').onclick=()=>{if(!noWeight&&(!input||input.value==='')){alert('오늘 중량을 입력해 주세요.');return}e.weight=input?input.value:'';e.done=!e.done;schedule();renderWorkout()};
     $('list').appendChild(c);
   });
   const vals=Object.values(draft.entries),n=vals.filter(x=>x.done).length,p=Math.round(n*100/vals.length);$('bar').style.width=p+'%';$('count').textContent=n+' / '+vals.length+' · '+p+'%';
 }
+$('closeGuide').onclick=closeExerciseGuide;
+
+$('exerciseGuideModal').onclick=event=>{
+  if(event.target===$('exerciseGuideModal')){
+    closeExerciseGuide();
+  }
+};
   $('workoutNav').onclick=()=>{
   $('workoutNav').classList.add('on');
   $('bodyNav').classList.remove('on');
@@ -1150,4 +1157,59 @@ $('linkEmailButton').onclick = async () => {
     );
   }
 })();  
-</script></main></body></html>
+</script>
+<div
+  id="exerciseGuideModal"
+  style="
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.45);
+    z-index:9999;
+    padding:18px;
+    box-sizing:border-box;
+    overflow:auto;
+  "
+>
+  <div
+    style="
+      max-width:620px;
+      margin:40px auto;
+      background:#fff;
+      border-radius:18px;
+      padding:18px;
+      box-sizing:border-box;
+    "
+  >
+    <div
+      style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:12px;
+      "
+    >
+      <h2 id="guideTitle" style="margin:0"></h2>
+
+      <button
+        id="closeGuide"
+        type="button"
+        class="secondary"
+        style="
+          border:0;
+          border-radius:10px;
+          padding:9px 12px;
+          font-weight:700;
+        "
+      >
+        닫기
+      </button>
+    </div>
+
+    <div
+      id="guideContent"
+      style="margin-top:16px;line-height:1.7"
+    ></div>
+  </div>
+</div>
+</main></body></html>
