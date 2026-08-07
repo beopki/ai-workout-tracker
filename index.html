@@ -1016,13 +1016,15 @@ $('title').textContent = dayInfo.title;$('duration').value=draft.duration||40;$(
   });
   const vals=Object.values(draft.entries),n=vals.filter(x=>x.done).length,p=Math.round(n*100/vals.length);$('bar').style.width=p+'%';$('count').textContent=n+' / '+vals.length+' · '+p+'%';
 }
-$('closeGuide').onclick=closeExerciseGuide;
+window.addEventListener('DOMContentLoaded',()=>{
+  $('closeGuide').onclick=closeExerciseGuide;
 
-$('exerciseGuideModal').onclick=event=>{
-  if(event.target===$('exerciseGuideModal')){
-    closeExerciseGuide();
-  }
-};
+  $('exerciseGuideModal').onclick=event=>{
+    if(event.target===$('exerciseGuideModal')){
+      closeExerciseGuide();
+    }
+  };
+});
   $('workoutNav').onclick=()=>{
   $('workoutNav').classList.add('on');
   $('bodyNav').classList.remove('on');
