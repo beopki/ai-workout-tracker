@@ -724,12 +724,27 @@ function updateEmailCard(user){
   $('tabs').innerHTML='';
   [1,2,3,4].forEach(d=>{const b=document.createElement('button');b.textContent='Day '+d;b.className=d===selected?'on':'';b.onclick=()=>{selected=d;renderHome()};$('tabs').appendChild(b)});
   const info = WORKOUT_DAY_INFO[selected];
+$('mission').innerHTML = `
+  <div class="hero-kicker">오늘의 운동 · DAY ${selected}</div>
+  <div class="hero-title">${info.title}</div>
+  <div class="hero-meta">
+    ${info.subtitle} · ${WORKOUT_CATALOG[selected].length}개 운동 · 약 ${info.minutes}분
+  </div>
+`;
 
-$('mission').textContent = info.title;
+$('sub').textContent = '';
 
-$('sub').textContent =
-  `${info.subtitle} · ${WORKOUT_CATALOG[selected].length}개 운동 · 약 ${info.minutes}분`;
-  $('preview').innerHTML=WORKOUT_CATALOG[selected].map((x,i)=>`<div style="padding:6px 0">${i+1}. ${x}</div>`).join('');
+$('preview').innerHTML = `
+  <div class="hero-progress-wrap">
+    <div class="hero-progress-label">
+      <span>오늘의 진행률</span>
+      <strong>0%</strong>
+    </div>
+    <div class="hero-progress">
+      <div class="hero-progress-bar" style="width:0%"></div>
+    </div>
+  </div>
+`;
 }
   function localToday(){
   const now=new Date();
