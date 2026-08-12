@@ -166,6 +166,197 @@ input{width:100%;box-sizing:border-box;padding:10px;border:1px solid #ccc;border
   .metric-grid{grid-template-columns:1fr}
   .body-summary{grid-template-columns:1fr}
 }
+  /* ===== Premium Dark Theme ===== */
+
+:root{
+  --bg:#0b0f12;
+  --surface:#11171c;
+  --surface-2:#151c22;
+  --surface-3:#1a2229;
+
+  --text:#f4f7f8;
+  --muted:#98a4ad;
+
+  --emerald:#16c784;
+  --emerald-2:#0fa968;
+  --emerald-soft:rgba(22,199,132,.14);
+
+  --gold:#d8b45c;
+  --gold-soft:rgba(216,180,92,.12);
+
+  --border:rgba(255,255,255,.08);
+  --shadow:0 14px 40px rgba(0,0,0,.28);
+}
+
+body{
+  background:
+    radial-gradient(circle at top right, rgba(22,199,132,.08), transparent 28%),
+    linear-gradient(180deg,#080b0e 0%,#0d1216 100%);
+  color:var(--text);
+}
+
+main{
+  max-width:760px;
+}
+
+.card,
+.exercise{
+  background:
+    linear-gradient(180deg,var(--surface-2),var(--surface));
+  border:1px solid var(--border);
+  box-shadow:var(--shadow);
+  color:var(--text);
+}
+
+.card{
+  border-radius:22px;
+}
+
+.exercise{
+  border-radius:18px;
+  transition:
+    transform .18s ease,
+    box-shadow .18s ease,
+    border-color .18s ease;
+}
+
+.exercise:hover{
+  transform:translateY(-2px);
+  border-color:rgba(22,199,132,.32);
+}
+
+.exercise.done{
+  background:
+    linear-gradient(135deg,rgba(22,199,132,.13),var(--surface));
+  border-color:rgba(22,199,132,.34);
+}
+
+h1,h2,h3,
+#title{
+  color:var(--text);
+}
+
+#sub,
+.status,
+small{
+  color:var(--muted);
+}
+
+.topnav,
+.tabs{
+  background:#11171c;
+  border:1px solid var(--border);
+}
+
+.topnav button,
+.tabs button{
+  background:transparent;
+  color:#aeb8c0;
+  transition:.18s ease;
+}
+
+.topnav button.on,
+.tabs button.on{
+  background:
+    linear-gradient(135deg,var(--emerald),var(--emerald-2));
+  color:#fff;
+  box-shadow:0 8px 22px rgba(22,199,132,.22);
+}
+
+.btn{
+  background:
+    linear-gradient(135deg,var(--emerald),var(--emerald-2));
+  color:#fff;
+  border:none;
+  box-shadow:0 10px 24px rgba(22,199,132,.22);
+  transition:
+    transform .16s ease,
+    box-shadow .16s ease;
+}
+
+.btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 14px 30px rgba(22,199,132,.28);
+}
+
+.btn:active{
+  transform:scale(.985);
+}
+
+.secondary{
+  background:#171e24;
+  color:#d6dde2;
+  border:1px solid rgba(255,255,255,.09);
+}
+
+.guidebtn{
+  color:var(--gold);
+  border:1px solid rgba(216,180,92,.45);
+  background:var(--gold-soft);
+}
+
+input,
+textarea,
+select{
+  background:#10161b;
+  color:var(--text);
+  border:1px solid rgba(255,255,255,.10);
+}
+
+input:focus,
+textarea:focus,
+select:focus{
+  outline:none;
+  border-color:var(--emerald);
+  box-shadow:0 0 0 4px rgba(22,199,132,.12);
+}
+
+.field{
+  background:#12191f;
+  border:1px solid rgba(255,255,255,.06);
+}
+
+.progress{
+  background:#232c33;
+  border-radius:999px;
+}
+
+.bar{
+  background:
+    linear-gradient(90deg,var(--emerald),#45ddb0);
+  border-radius:999px;
+  transition:width .35s ease;
+}
+
+.summary-item,
+.body-record{
+  background:
+    linear-gradient(180deg,#151c22,#11171c);
+  border:1px solid var(--border);
+  color:var(--text);
+}
+
+#exerciseGuideModal{
+  background:rgba(0,0,0,.72) !important;
+  backdrop-filter:blur(7px);
+}
+
+#exerciseGuideModal > div{
+  background:#141a20 !important;
+  color:var(--text);
+  border:1px solid rgba(255,255,255,.09);
+  box-shadow:0 24px 70px rgba(0,0,0,.55);
+}
+
+#exerciseGuideModal .field{
+  background:#10161b;
+}
+
+#exerciseGuideModal div[style*="#fff4e5"]{
+  background:rgba(216,180,92,.12) !important;
+  border:1px solid rgba(216,180,92,.28);
+  color:#f5e4b6;
+}
 </style></head><body><main>
 <h1>AI Workout Tracker</h1><div id="status" class="status">온라인 연결 중…</div>
 
