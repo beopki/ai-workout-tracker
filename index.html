@@ -452,6 +452,143 @@ select:focus{
   box-shadow:0 0 18px rgba(22,199,132,.35);
   transition:width .35s ease;
 }
+  /* ===== Exercise Card Upgrade ===== */
+
+.exercise{
+  position:relative;
+  overflow:hidden;
+  padding:20px;
+  border-radius:22px;
+  background:
+    linear-gradient(180deg,#151c22 0%,#11171c 100%);
+  border:1px solid rgba(255,255,255,.07);
+  box-shadow:0 12px 32px rgba(0,0,0,.22);
+}
+
+.exercise::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width:3px;
+  background:linear-gradient(
+    180deg,
+    rgba(22,199,132,.95),
+    rgba(22,199,132,.12)
+  );
+  opacity:.55;
+}
+
+.exercise.done{
+  background:
+    radial-gradient(circle at 90% 10%,rgba(22,199,132,.12),transparent 30%),
+    linear-gradient(180deg,#142019,#11171c);
+  border-color:rgba(22,199,132,.28);
+}
+
+.exercise h3,
+.exercise strong{
+  color:#f7fafc;
+}
+
+.exercise h3{
+  font-size:22px;
+  font-weight:900;
+  letter-spacing:-.5px;
+  margin-bottom:14px;
+}
+
+.exercise .field{
+  background:#10161b;
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:16px;
+  padding:14px;
+}
+
+.exercise input{
+  background:#0d1318;
+  color:#fff;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:12px;
+  min-height:44px;
+  font-size:18px;
+  font-weight:800;
+}
+
+.exercise input:focus{
+  border-color:var(--emerald);
+  box-shadow:
+    0 0 0 4px rgba(22,199,132,.10),
+    0 6px 18px rgba(0,0,0,.18);
+}
+
+.exercise .secondary,
+.exercise .guidebtn{
+  min-height:46px;
+  border-radius:13px;
+  font-weight:800;
+}
+
+.exercise .guidebtn{
+  background:
+    linear-gradient(
+      180deg,
+      rgba(216,180,92,.12),
+      rgba(216,180,92,.06)
+    );
+  color:#e2bd64;
+  border:1px solid rgba(216,180,92,.42);
+}
+
+.exercise .guidebtn:hover{
+  background:rgba(216,180,92,.16);
+}
+
+.exercise .btn{
+  min-height:46px;
+  border-radius:13px;
+  font-weight:900;
+}
+
+.exercise.done .btn{
+  background:
+    linear-gradient(135deg,#199f6e,#10734f);
+}
+
+.exercise .row{
+  gap:14px;
+}
+
+.exercise small{
+  color:#8f9ba5;
+}
+
+.exercise label{
+  color:#aeb8c0;
+  font-size:14px;
+  font-weight:700;
+}
+
+@media(max-width:560px){
+  .exercise{
+    padding:16px;
+  }
+
+  .exercise h3{
+    font-size:19px;
+  }
+
+  .exercise .row{
+    grid-template-columns:1fr;
+  }
+
+  .exercise .btn,
+  .exercise .secondary,
+  .exercise .guidebtn{
+    width:100%;
+  }
+}
 </style></head><body><main>
 <h1>AI Workout Tracker</h1><div id="status" class="status">온라인 연결 중…</div>
 
