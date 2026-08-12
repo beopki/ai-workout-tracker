@@ -589,6 +589,62 @@ select:focus{
     width:100%;
   }
 }
+  /* ===== Weight Input Polish ===== */
+
+/* 숫자 입력창 기본 화살표 제거 */
+.exercise input[type="number"]::-webkit-inner-spin-button,
+.exercise input[type="number"]::-webkit-outer-spin-button{
+  -webkit-appearance:none;
+  margin:0;
+}
+
+.exercise input[type="number"]{
+  -moz-appearance:textfield;
+  appearance:textfield;
+}
+
+/* 지난 중량 / 오늘 중량 영역 조금 더 컴팩트하게 */
+.exercise .field{
+  min-height:86px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+.exercise input[type="number"]{
+  height:48px;
+  padding:0 14px;
+  font-size:21px;
+  font-weight:900;
+  letter-spacing:.2px;
+}
+
+/* kg는 조금 차분하게 */
+.exercise .field{
+  color:#aab4bc;
+}
+
+/* 오늘 중량 쪽 강조 */
+.exercise input[type="number"]:not(:placeholder-shown){
+  border-color:rgba(22,199,132,.5);
+}
+
+/* 버튼 높이 통일 */
+.exercise .guidebtn,
+.exercise .btn{
+  height:50px;
+}
+
+/* 모바일 */
+@media(max-width:560px){
+  .exercise .field{
+    min-height:auto;
+  }
+
+  .exercise input[type="number"]{
+    font-size:20px;
+  }
+}
 </style></head><body><main>
 <h1>AI Workout Tracker</h1><div id="status" class="status">온라인 연결 중…</div>
 
