@@ -1210,6 +1210,7 @@ $('linkEmailButton').onclick = async () => {
 </script>
 <div
   id="exerciseGuideModal"
+  onclick="if(event.target===this) closeExerciseGuide()"
   style="
     display:none;
     position:fixed;
@@ -1244,6 +1245,7 @@ $('linkEmailButton').onclick = async () => {
       <button
         id="closeGuide"
         type="button"
+        onclick="closeExerciseGuide()"
         class="secondary"
         style="
           border:0;
