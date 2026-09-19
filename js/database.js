@@ -133,7 +133,7 @@ if(!r.data){
       exercise_name:e.name,weight_kg:e.weight===''?null:Number(e.weight),
       is_completed:!!e.done,updated_at:new Date().toISOString()
     }));
-    r=await supa.from('workout_entries').upsert(rows,{onConflict:'session_id,exercise_key'});
+    r=await supa.from('workout_entries').upsert(rows,{onConflict:'session_id,exercise_key'});  
     if(r.error) throw r.error;
   }
 
