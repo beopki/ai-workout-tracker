@@ -1717,6 +1717,7 @@ $('finish').onclick=async()=>{const missing=Object.values(draft.entries).filter(
 const s=await DB.complete(draft);
 workoutActive=false;
 localStorage.removeItem('workoutActive');
+draft=null;                              
 $('results').innerHTML=WORKOUT_CATALOG[s.day].map((name,i)=>{const key=getExerciseKey(s.day, i),e=s.entries[key],p=previous[key];let ch=!e.done?'미수행':p===undefined?'첫 기록':((Number(e.weight)-p)>=0?'+':'')+(Number(e.weight)-p)+' kg';return`<div style="padding:10px 0;border-bottom:1px solid #eee"><strong>${name}</strong><div>${ch}</div></div>`}).join('');show('result')};
 $('exitWorkout').onclick=()=>{
   schedule();
