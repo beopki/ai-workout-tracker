@@ -28,6 +28,7 @@
     let r=await supa.from('workout_sessions')
       .select('*,workout_entries(*)')
       .eq('user_id',user.id).eq('workout_day',day).eq('workout_date',date)
+      .eq('status','draft')
       .maybeSingle();
     if(r.error) throw r.error;
 
