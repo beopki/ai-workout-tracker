@@ -10,43 +10,7 @@
     );
     let {data:{session},error}=await supa.auth.getSession();
     if(error) throw error;
-    if(r.data && r.data.status === 'completed'){
-  const resetEntries = (r.data.workout_entries || []).map(x => ({
-    id: x.id,
-    is_completed: false,
-    weight_kg: null
-  }));
-
-  for(const x of resetEntries){
-    const e = await supa.from('workout_entries')
-      .update({
-        is_completed: false,
-        weight_kg: null
-      })
-      .eq('id', x.id);
-
-    if(e.error) throw e.error;
-  }
-
-  const s = await supa.from('workout_sessions')
-    .update({
-      status: 'draft',
-      duration_min: null,
-      memo: null
-    })
-    .eq('id', r.data.id);
-
-  if(s.error) throw s.error;
-
-  r.data.status = 'draft';
-  r.data.duration_min = null;
-  r.data.memo = null;
-  r.data.workout_entries = (r.data.workout_entries || []).map(x => ({
-    ...x,
-    is_completed: false,
-    weight_kg: null
-  }));
-}
+  
 
     if(!session){
       const r=await supa.auth.signInAnonymously();
@@ -66,23 +30,75 @@
     let r=await supa.from('workout_sessions')
       .select('*,workout_entries(*)')
       .eq('user_id',user.id).eq('workout_day',day).eq('workout_date',date)
+      .eq('status','draft')
       .maybeSingle();
     if(r.error) throw r.error;
+if(!r.data){
+  r=await supa.from('workout_sessions')
+    .select('*,workout_entries(*)')
+    .eq('user_id',user.id)
+    .eq('workout_day',day)
+    .eq('workout_date',date)
+    .maybeSingle();
 
-    if(!r.data){
-      r=await supa.from('workout_sessions').insert({
-        user_id:user.id,workout_day:day,workout_date:date,status:'draft'
-      }).select().single();
-      if(r.error) throw r.error;
+  if(r.error) throw r.error;
 
-      const entries=WORKOUT_CATALOG[day].map((name,i)=>({
-        session_id:r.data.id,user_id:user.id,exercise_key:getExerciseKey(day, i),
-        exercise_name:name,is_completed:false
-      }));
-      const e=await supa.from('workout_entries').insert(entries).select();
+  if(r.data){
+    for(const x of (r.data.workout_entries || [])){
+      const e=await supa.from('workout_entries')
+        .update({
+          is_completed:false,
+          weight_kg:null
+        })
+        .eq('id',x.id);
+
       if(e.error) throw e.error;
-      r.data.workout_entries=e.data;
     }
+
+    const s=await supa.from('workout_sessions')
+      .update({
+        status:'draft',
+        duration_min:null,
+        memo:null
+      })
+      .eq('id',r.data.id);
+
+    if(s.error) throw s.error;
+
+    r.data.status='draft';
+    r.data.duration_min=null;
+    r.data.memo=null;
+    r.data.workout_entries=(r.data.workout_entries || []).map(x=>({
+      ...x,
+      is_completed:false,
+      weight_kg:null
+    }));
+  }else{
+    r=await supa.from('workout_sessions').insert({
+      user_id:user.id,
+      workout_day:day,
+      workout_date:date,
+      status:'draft'
+    }).select().single();
+
+    if(r.error) throw r.error;
+
+    const entries=WORKOUT_CATALOG[day].map((name,i)=>({
+      session_id:r.data.id,
+      user_id:user.id,
+      exercise_key:getExerciseKey(day,i),
+      exercise_name:name,
+      is_completed:false
+    }));
+
+    const e=await supa.from('workout_entries')
+      .insert(entries)
+      .select();
+
+    if(e.error) throw e.error;
+    r.data.workout_entries=e.data;
+  }
+}
 
     const draft=normalize(r.data);
     saveLocal(draft);
