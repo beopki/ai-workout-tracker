@@ -782,6 +782,7 @@ select:focus{
 <div id="list"></div>
 <div class="card"><label>운동시간</label><div class="weight"><input id="duration" type="number" value="40"><span>분</span></div>
 <label>메모</label><input id="memo"><button id="finish" class="btn" style="width:100%;margin-top:10px">운동 종료</button></div>
+<button id="exitWorkout" class="secondary" style="width:100%;margin-top:10px">← 홈으로 나가기</button>
 </section>
 
 <section id="result" class="page"><div class="card"><h2>오늘의 성장</h2><div id="results"></div></div><button id="back" class="btn" style="width:100%">완료</button></section>
@@ -1037,6 +1038,7 @@ inputmode="decimal"
 </section>
 <script>
 let selected=1,draft,previous={},timer,bodyRecords=[];
+let workoutActive = localStorage.getItem('workoutActive') === 'true';
 const $=id=>document.getElementById(id);
 function show(id){document.querySelectorAll('.page').forEach(x=>x.classList.remove('on'));$(id).classList.add('on')}
 function updateEmailCard(user){
@@ -1706,11 +1708,22 @@ $('saveBody').onclick=async()=>{
     button.disabled=false;
   }
 };
-$('start').onclick=async()=>{draft=await DB.getOrCreateDraft(selected);previous=await DB.previousWeights(selected,draft.date);renderWorkout();show('workout')};
+$('start').onclick=async()=>{
+  workoutActive=true;
+  localStorage.setItem('workoutActive','true');
+  draft=await DB.getOrCreateDraft(selected);previous=await DB.previousWeights(selected,draft.date);renderWorkout();show('workout')};
 $('duration').oninput=()=>{draft.duration=$('duration').value;schedule()};$('memo').oninput=()=>{draft.memo=$('memo').value;schedule()};
 $('finish').onclick=async()=>{const missing=Object.values(draft.entries).filter(x=>!x.done).length;if(missing&&!confirm('미완료 운동이 '+missing+'개 있습니다. 종료할까요?'))return;
-const s=await DB.complete(draft);$('results').innerHTML=WORKOUT_CATALOG[s.day].map((name,i)=>{const key=getExerciseKey(s.day, i),e=s.entries[key],p=previous[key];let ch=!e.done?'미수행':p===undefined?'첫 기록':((Number(e.weight)-p)>=0?'+':'')+(Number(e.weight)-p)+' kg';return`<div style="padding:10px 0;border-bottom:1px solid #eee"><strong>${name}</strong><div>${ch}</div></div>`}).join('');show('result')};
-$('back').onclick=()=>{selected=draft.day===4?1:draft.day+1;renderHome();show('home')};
+const s=await DB.complete(draft);
+workoutActive=false;
+localStorage.removeItem('workoutActive');
+$('results').innerHTML=WORKOUT_CATALOG[s.day].map((name,i)=>{const key=getExerciseKey(s.day, i),e=s.entries[key],p=previous[key];let ch=!e.done?'미수행':p===undefined?'첫 기록':((Number(e.weight)-p)>=0?'+':'')+(Number(e.weight)-p)+' kg';return`<div style="padding:10px 0;border-bottom:1px solid #eee"><strong>${name}</strong><div>${ch}</div></div>`}).join('');show('result')};
+$('exitWorkout').onclick=()=>{
+  schedule();
+  renderHome();
+  show('home');
+};
+  $('back').onclick=()=>{selected=draft.day===4?1:draft.day+1;renderHome();show('home')};
   $('emailCardToggle').onclick=()=>{
   const content=$('emailCardContent');
   const icon=$('emailToggleIcon');
@@ -1762,7 +1775,17 @@ $('linkEmailButton').onclick = async () => {
 
     $('status').textContent='온라인 연결됨';
     updateEmailCard(user);
-    renderHome();
+ if(workoutActive){
+  draft=await DB.getOrCreateDraft(selected);
+  selected=draft.day;
+  previous=await DB.previousWeights(selected,draft.date);
+  renderWorkout();
+  show('workout');
+}else{
+  renderHome();
+  show('home');
+}
+
   }catch(e){
     $('status').textContent='연결 실패 · '+e.message;
 
