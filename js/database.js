@@ -10,6 +10,44 @@
     );
     let {data:{session},error}=await supa.auth.getSession();
     if(error) throw error;
+    if(r.data && r.data.status === 'completed'){
+  const resetEntries = (r.data.workout_entries || []).map(x => ({
+    id: x.id,
+    is_completed: false,
+    weight_kg: null
+  }));
+
+  for(const x of resetEntries){
+    const e = await supa.from('workout_entries')
+      .update({
+        is_completed: false,
+        weight_kg: null
+      })
+      .eq('id', x.id);
+
+    if(e.error) throw e.error;
+  }
+
+  const s = await supa.from('workout_sessions')
+    .update({
+      status: 'draft',
+      duration_min: null,
+      memo: null
+    })
+    .eq('id', r.data.id);
+
+  if(s.error) throw s.error;
+
+  r.data.status = 'draft';
+  r.data.duration_min = null;
+  r.data.memo = null;
+  r.data.workout_entries = (r.data.workout_entries || []).map(x => ({
+    ...x,
+    is_completed: false,
+    weight_kg: null
+  }));
+}
+
     if(!session){
       const r=await supa.auth.signInAnonymously();
       if(r.error) throw r.error;
@@ -28,7 +66,6 @@
     let r=await supa.from('workout_sessions')
       .select('*,workout_entries(*)')
       .eq('user_id',user.id).eq('workout_day',day).eq('workout_date',date)
-      .eq('status','draft')
       .maybeSingle();
     if(r.error) throw r.error;
 
