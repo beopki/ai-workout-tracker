@@ -226,10 +226,37 @@ main{
 }
 
 .exercise.done{
+  position:relative;
   background:
-    linear-gradient(135deg,rgba(22,199,132,.13),var(--surface));
-  border-color:rgba(22,199,132,.34);
+    linear-gradient(135deg,rgba(22,199,132,.06),var(--surface));
+  border-color:rgba(22,199,132,.18);
+  opacity:.58;
 }
+
+.exercise.done .exercise-title{
+  color:var(--muted);
+}
+
+.exercise.done .exercise-number{
+  opacity:.55;
+}
+
+.exercise.done::after{
+  content:"DONE";
+  position:absolute;
+  top:22px;
+  right:22px;
+  padding:5px 10px;
+  border:2px solid rgba(22,199,132,.65);
+  border-radius:7px;
+  color:rgba(22,199,132,.75);
+  font-size:16px;
+  font-weight:900;
+  letter-spacing:2px;
+  transform:rotate(-8deg);
+  pointer-events:none;
+}
+
 
 h1,h2,h3,
 #title{
